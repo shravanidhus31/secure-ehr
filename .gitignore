@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.db
+
+# Secrets — never commit these
+backend/.env
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
