@@ -25,3 +25,27 @@ def search_doctors(
     ).limit(20).all()
 
     return [{"id": d.id, "name": d.name, "role": d.role, "public_key": d.public_key} for d in doctors]
+@router.get("/me")
+def get_me(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return current user's profile including public key."""
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+        "role": current_user.role,
+        "public_key": current_user.public_key,
+    }
+@router.get("/{user_id}/public")
+def get_user_public(
+    user_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get basic public info about any user by ID."""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"id": user.id, "name": user.name, "role": user.role}

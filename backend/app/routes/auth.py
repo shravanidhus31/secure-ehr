@@ -78,7 +78,28 @@ def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)
         "name": user.name,
         "role": user.role,
         # Sent to client so browser can decrypt private key locally
+        "public_key": user.public_key, 
         "encrypted_private_key": key_blob["ciphertext"],
         "salt": user.salt,
         "private_key_iv": key_blob["iv"],
     }
+@router.patch("/activate/{user_id}")
+def activate_user(
+    user_id: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Simple activation endpoint for the mini project.
+    In production this would require admin authentication.
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_active = "true"
+    db.commit()
+    return {"message": f"{user.name} activated successfully", "user_id": user.id}
+@router.get("/users/all")
+def list_all_users(db: Session = Depends(get_db)):
+    """Dev helper — list all users to find IDs for activation."""
+    users = db.query(User).all()
+    return [{"id": u.id, "name": u.name, "email": u.email, "role": u.role, "is_active": u.is_active} for u in users]
