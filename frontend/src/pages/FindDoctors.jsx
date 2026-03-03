@@ -172,7 +172,7 @@ export default function FindDoctors() {
           <h2 style={{ fontSize: 34, fontWeight: 800, color: '#111827', marginBottom: 8 }}>
             Your Trusted Medical Team
           </h2>
-          <p style={{ fontSize: 15, color: '#6B7280' }}>
+          <p style={{ fontSize: 15, color: '#808899' }}>
             Dedicated specialists delivering personalized, advanced healthcare for every patient.
           </p>
         </div>
