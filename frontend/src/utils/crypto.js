@@ -195,6 +195,8 @@ export async function rewrapKeyForUser(wrappedAesKey, ownerPrivateKey, doctorPub
     ['encrypt', 'decrypt']
   );
 
+  
+
   // Re-wrap with doctor's public key
   const newWrappedKey = await window.crypto.subtle.wrapKey(
     'raw',
@@ -203,5 +205,55 @@ export async function rewrapKeyForUser(wrappedAesKey, ownerPrivateKey, doctorPub
     { name: 'RSA-OAEP', hash: 'SHA-256' }
   );
 
+  
   return bytesToBase64(newWrappedKey);
+
+  
+}
+export async function encryptPdf(file, recipientPublicKeyPem) {
+  // Read file as ArrayBuffer
+  const arrayBuffer = await file.arrayBuffer();
+  const fileBytes = new Uint8Array(arrayBuffer);
+
+  // Generate AES session key — must be extractable to wrap it
+  const aesKey = await window.crypto.subtle.generateKey(
+    { name: 'AES-GCM', length: 256 },
+    true,  // extractable — needed for wrapKey
+    ['encrypt', 'decrypt']
+  );
+
+  // Generate random IV
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+  // Encrypt the PDF bytes with AES-GCM
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv, tagLength: 128 },
+    aesKey,
+    fileBytes
+  );
+
+  // Import recipient RSA public key
+  const pubKeyBytes = pemToBytes(recipientPublicKeyPem);
+  const publicKey = await window.crypto.subtle.importKey(
+    'spki',
+    pubKeyBytes,
+    { name: 'RSA-OAEP', hash: 'SHA-256' },
+    false,
+    ['wrapKey']
+  );
+
+  // Wrap AES key with RSA public key
+  const wrappedAesKey = await window.crypto.subtle.wrapKey(
+    'raw',
+    aesKey,
+    publicKey,
+    { name: 'RSA-OAEP' }
+  );
+
+  return {
+    encrypted_pdf: bytesToBase64(new Uint8Array(encrypted)),
+    pdf_iv: bytesToBase64(iv),
+    wrapped_pdf_key: bytesToBase64(new Uint8Array(wrappedAesKey)),
+    filename: file.name,
+  };
 }

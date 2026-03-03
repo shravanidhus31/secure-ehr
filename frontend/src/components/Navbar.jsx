@@ -1,76 +1,119 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ShieldCheck, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, LayoutDashboard, ClipboardList, LogOut } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const isActive = (path) => location.pathname === path;
 
   return (
     <nav style={{
-      background: 'var(--bg-card)',
-      borderBottom: '1px solid var(--border)',
-      padding: '0 24px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      height: '60px',
+      background: 'white',
+      boxShadow: '0 1px 8px rgba(0,0,0,0.08)',
       position: 'sticky',
       top: 0,
-      zIndex: 100,
+      zIndex: 50,
+      width: '100%',
     }}>
-      {/* Logo */}
-      <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 8,
-          background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
-          <Shield size={18} color="white" />
-        </div>
-        <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--text-primary)' }}>
-          SecureEHR
-        </span>
-      </Link>
+      <div style={{
+        maxWidth: 1200,
+        margin: '0 auto',
+        padding: '0 32px',
+        height: 64,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
 
-      {/* Nav Links */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        {[
-          { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-          { to: '/audit', icon: ClipboardList, label: 'Activity' },
-        ].map(({ to, icon: Icon, label }) => (
-          <Link key={to} to={to} style={{
-            display: 'flex', alignItems: 'center', gap: '6px',
-            padding: '6px 14px', borderRadius: '6px', textDecoration: 'none',
-            fontSize: '14px', fontWeight: 600,
-            color: isActive(to) ? 'var(--primary)' : 'var(--text-secondary)',
-            background: isActive(to) ? 'var(--primary-glow)' : 'transparent',
-            transition: 'all 0.15s',
-          }}>
-            <Icon size={15} />
-            {label}
-          </Link>
-        ))}
-      </div>
+        {/* Logo */}
+        <Link to={user ? '/dashboard' : '/find-doctors'}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <ShieldCheck size={28} color="#16A34A" />
+          <span style={{ fontSize: 20, fontWeight: 800, color: '#111827', fontFamily: 'Inter, sans-serif' }}>
+            MediSafe
+          </span>
+        </Link>
 
-      {/* User + Logout */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '13px', fontWeight: 700 }}>{user?.name}</div>
-          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{user?.role}</div>
+        {/* Center Nav Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
+          {[
+            { to: '/find-doctors', label: 'Home' },
+            { to: '/find-doctors', label: 'Find Doctors' },
+            ...(user ? [
+              { to: '/dashboard', label: 'Dashboard' },
+              { to: '/audit', label: 'Activity' },
+            ] : []),
+          ].map(({ to, label }) => (
+            <Link key={label} to={to} style={{
+              fontSize: 15,
+              fontWeight: isActive(to) ? 700 : 500,
+              color: isActive(to) ? '#111827' : '#6B7280',
+              textDecoration: isActive(to) ? 'underline' : 'none',
+              textUnderlineOffset: 4,
+              fontFamily: 'Inter, sans-serif',
+              transition: 'color 0.15s',
+            }}>
+              {label}
+            </Link>
+          ))}
         </div>
-        <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '6px 12px' }}>
-          <LogOut size={14} />
-          Logout
-        </button>
+
+        {/* Right side */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {user ? (
+            <>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: '#F0FDF4', border: '1px solid #BBF7D0',
+                borderRadius: 999, padding: '6px 14px',
+              }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: '#16A34A', color: 'white',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, fontWeight: 700, fontFamily: 'Inter, sans-serif',
+                }}>
+                  {user.name?.charAt(0).toUpperCase()}
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#374151', fontFamily: 'Inter, sans-serif' }}>
+                  {user.name}
+                </span>
+                <span style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, fontFamily: 'Inter, sans-serif', textTransform: 'capitalize' }}>
+                  ({user.role})
+                </span>
+              </div>
+              <button onClick={() => { logout(); navigate('/login'); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontSize: 14, fontWeight: 600, color: '#EF4444',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontFamily: 'Inter, sans-serif',
+                }}>
+                <LogOut size={15} /> Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" style={{
+                fontSize: 14, fontWeight: 600, color: '#374151',
+                textDecoration: 'none', fontFamily: 'Inter, sans-serif',
+              }}>
+                Sign In
+              </Link>
+              <Link to="/find-doctors" style={{
+                background: '#16A34A', color: 'white',
+                borderRadius: 999, padding: '10px 22px',
+                fontSize: 14, fontWeight: 700,
+                textDecoration: 'none', fontFamily: 'Inter, sans-serif',
+                boxShadow: '0 2px 8px rgba(22,163,74,0.3)',
+              }}>
+                Book Appointment
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );

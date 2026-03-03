@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -12,7 +13,8 @@ router = APIRouter(prefix="/records", tags=["access"])
 
 class GrantAccessRequest(BaseModel):
     doctor_id: str
-    wrapped_aes_key: str  # AES key re-wrapped with doctor's public key (done client-side)
+    wrapped_aes_key: str
+    wrapped_pdf_key: Optional[str] = None
 
 
 @router.post("/{record_id}/access", status_code=status.HTTP_201_CREATED)
@@ -35,8 +37,12 @@ def grant_access(record_id: str, payload: GrantAccessRequest, request: Request,
     ).first()
     if existing:
         raise HTTPException(status_code=409, detail="Access already granted")
-
-    db.add(KeyEnvelope(record_id=record_id, user_id=payload.doctor_id, wrapped_aes_key=payload.wrapped_aes_key))
+    db.add(KeyEnvelope(
+    record_id=record_id,
+    user_id=payload.doctor_id,
+    wrapped_aes_key=payload.wrapped_aes_key,
+    wrapped_pdf_key=payload.wrapped_pdf_key,
+    ))
     db.commit()
 
     log_event(db, "access_granted", user_id=current_user.id, record_id=record_id,

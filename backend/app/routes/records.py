@@ -19,6 +19,10 @@ class CreateRecordRequest(BaseModel):
     title: str
     owner_id: Optional[str] = None
 
+    encrypted_pdf: Optional[str] = None      # ← add
+    pdf_iv: Optional[str] = None             # ← add
+    pdf_filename: Optional[str] = None       # ← add
+
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_record(payload: CreateRecordRequest, request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -36,11 +40,24 @@ def create_record(payload: CreateRecordRequest, request: Request, db: Session = 
         iv=payload.iv,
         record_type=payload.record_type,
         title=payload.title,
+        encrypted_pdf=payload.encrypted_pdf,
+        pdf_iv=payload.pdf_iv,
+        pdf_filename=payload.pdf_filename,
     )
     db.add(record)
     db.flush()
 
-    envelope = KeyEnvelope(record_id=record.id, user_id=current_user.id, wrapped_aes_key=payload.wrapped_aes_key)
+    # Extract just the IV part from pdf_iv (format is "iv::wrappedPdfKey")
+    pdf_key_for_owner = None
+    if payload.pdf_iv and '::' in payload.pdf_iv:
+        pdf_key_for_owner = payload.pdf_iv.split('::')[1]
+
+    envelope = KeyEnvelope(
+        record_id=record.id,
+        user_id=current_user.id,
+        wrapped_aes_key=payload.wrapped_aes_key,
+        wrapped_pdf_key=pdf_key_for_owner,
+    )
     db.add(envelope)
     db.commit()
     db.refresh(record)
@@ -86,4 +103,8 @@ def get_record(record_id: str, request: Request, db: Session = Depends(get_db), 
         "wrapped_aes_key": envelope.wrapped_aes_key,
         "created_at": str(record.created_at),
         "owner_id": record.owner_id,
+        "encrypted_pdf": record.encrypted_pdf,
+        "pdf_iv": record.pdf_iv,
+        "pdf_filename": record.pdf_filename,
+        "wrapped_pdf_key": envelope.wrapped_pdf_key,
     }

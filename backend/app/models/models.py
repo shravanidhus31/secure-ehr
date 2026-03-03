@@ -55,6 +55,10 @@ class HealthRecord(Base):
     owner = relationship("User", back_populates="owned_records", foreign_keys=[owner_id])
     key_envelopes = relationship("KeyEnvelope", back_populates="record", cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog", back_populates="record")
+    
+    encrypted_pdf = Column(Text, nullable=True)
+    pdf_iv = Column(String, nullable=True)
+    pdf_filename = Column(String, nullable=True)
 
 
 class KeyEnvelope(Base):
@@ -73,6 +77,8 @@ class KeyEnvelope(Base):
 
     record = relationship("HealthRecord", back_populates="key_envelopes")
     user = relationship("User", back_populates="key_envelopes")
+    
+    wrapped_pdf_key = Column(Text, nullable=True)
 
 
 class AuditLog(Base):
