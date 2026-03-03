@@ -99,11 +99,11 @@ const DS = {
 };
 
 const TYPE_BADGE = {
-  diagnosis:    { bg: '#DBEAFE', color: '#1D4ED8' },
-  prescription: { bg: '#DCFCE7', color: '#15803D' },
-  lab_result:   { bg: '#FEF9C3', color: '#92400E' },
-  imaging:      { bg: '#CFFAFE', color: '#0E7490' },
-  note:         { bg: '#F3E8FF', color: '#7E22CE' },
+  diagnosis:    { bg: '#DBEAFE', color: '#1D4ED8', cardBg: '#EFF6FF', border: '#BFDBFE' },
+  prescription: { bg: '#DCFCE7', color: '#15803D', cardBg: '#F0FDF4', border: '#BBF7D0' },
+  lab_result:   { bg: '#FEF9C3', color: '#92400E', cardBg: '#FFFBEB', border: '#FDE68A' },
+  imaging:      { bg: '#CFFAFE', color: '#0E7490', cardBg: '#ECFEFF', border: '#A5F3FC' },
+  note:         { bg: '#F3E8FF', color: '#7E22CE', cardBg: '#FAF5FF', border: '#DDD6FE' },
 };
 
 const RECORD_TYPES = ['diagnosis', 'prescription', 'lab_result', 'imaging', 'note'];
@@ -301,7 +301,11 @@ export default function Dashboard() {
           ) : filteredRecords.map(record => {
             const badge = TYPE_BADGE[record.record_type] || { bg: '#F3F4F6', color: '#374151' };
             return (
-              <div key={record.id} style={DS.card}>
+              <div key={record.id} style={{
+                ...DS.card,
+                background: (TYPE_BADGE[record.record_type] || { cardBg: 'white' }).cardBg,
+                borderLeft: `4px solid ${(TYPE_BADGE[record.record_type] || { border: '#E5E7EB' }).border}`,
+              }}>
                 <div style={DS.cardInner}>
                   <div style={DS.cardTop}>
                     <span style={DS.badge(badge.bg, badge.color)}>

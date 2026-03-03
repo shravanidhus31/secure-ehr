@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { ClipboardList, Shield, Eye, UserPlus, UserMinus, LogIn, FileText } from 'lucide-react';
+import { Eye, UserPlus, UserMinus, LogIn, FileText, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { auditAPI } from '../utils/api';
 
 const ACTION_CONFIG = {
-  user_registered:   { label: 'REGISTERED',     color: 'bg-blue-100 text-blue-700',   icon: UserPlus  },
-  user_login:        { label: 'LOGIN',           color: 'bg-gray-100 text-gray-600',   icon: LogIn     },
-  user_login_failed: { label: 'LOGIN FAILED',    color: 'bg-red-100 text-red-600',     icon: LogIn     },
-  record_created:    { label: 'CREATED',         color: 'bg-blue-100 text-blue-700',   icon: FileText  },
-  record_viewed:     { label: 'VIEWED',          color: 'bg-green-100 text-green-700', icon: Eye       },
-  access_granted:    { label: 'GRANTED',         color: 'bg-yellow-100 text-yellow-700', icon: UserPlus },
-  access_revoked:    { label: 'REVOKED',         color: 'bg-red-100 text-red-600',     icon: UserMinus },
+  user_registered:   { label: 'REGISTERED', bg: '#DBEAFE', color: '#1D4ED8', icon: UserPlus },
+  user_login:        { label: 'LOGIN',       bg: '#F3F4F6', color: '#374151', icon: LogIn },
+  user_login_failed: { label: 'FAILED LOGIN',bg: '#FEE2E2', color: '#DC2626', icon: LogIn },
+  record_created:    { label: 'CREATED',     bg: '#DBEAFE', color: '#1D4ED8', icon: FileText },
+  record_viewed:     { label: 'VIEWED',      bg: '#DCFCE7', color: '#15803D', icon: Eye },
+  access_granted:    { label: 'GRANTED',     bg: '#FEF9C3', color: '#92400E', icon: UserPlus },
+  access_revoked:    { label: 'REVOKED',     bg: '#FEE2E2', color: '#DC2626', icon: UserMinus },
 };
 
 export default function AuditLog() {
@@ -26,86 +26,148 @@ export default function AuditLog() {
   }, []);
 
   const filtered = logs.filter(l =>
-    l.action.includes(search.toLowerCase()) ||
+    l.action.toLowerCase().includes(search.toLowerCase()) ||
     (l.record_title || '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-8">
+    <div style={{
+      maxWidth: 1000, margin: '0 auto',
+      padding: '40px 24px', fontFamily: 'Inter, sans-serif',
+    }}>
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-1">Activity Log</h1>
-        <p className="text-sm text-gray-500">Every action on your account — append-only, nothing deleted</p>
+      {/* Header */}
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
+          Activity Log
+        </h1>
+        <p style={{ fontSize: 14, color: '#6B7280' }}>
+          Every action on your account — append-only, nothing deleted
+        </p>
       </div>
 
       {/* Search */}
-      <div className="flex items-center gap-3 mb-6">
-        <input type="text" placeholder="Filter by action or record..."
-          value={search} onChange={e => setSearch(e.target.value)}
-          className="light-input max-w-sm rounded-xl" />
-      </div>
+      <input
+        type="text"
+        placeholder="Filter by action or record..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        style={{
+          width: '100%', maxWidth: 360,
+          padding: '10px 16px',
+          border: '1px solid #E5E7EB', borderRadius: 10,
+          fontSize: 14, fontFamily: 'Inter, sans-serif',
+          outline: 'none', color: '#374151',
+          background: 'white', marginBottom: 24,
+          boxSizing: 'border-box',
+        }}
+      />
 
-      {/* Table */}
       {loading ? (
-        <div className="flex justify-center py-20">
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
           <div className="spinner" style={{ width: 32, height: 32 }} />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-card text-center py-20">
-          <ClipboardList size={44} className="mx-auto mb-3 text-gray-300" />
-          <p className="font-medium text-gray-500">No activity yet</p>
+        <div style={{
+          background: 'white', borderRadius: 16,
+          boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+          padding: 60, textAlign: 'center',
+        }}>
+          <Shield size={44} color="#E5E7EB" style={{ margin: '0 auto 12px' }} />
+          <p style={{ color: '#9CA3AF', fontWeight: 500 }}>No activity yet</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-card overflow-hidden">
+        <div style={{
+          background: 'white', borderRadius: 16,
+          boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+          overflow: 'hidden',
+        }}>
           {/* Table header */}
-          <div className="grid grid-cols-4 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-100">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '180px 140px 1fr 180px',
+            gap: 0,
+            padding: '12px 24px',
+            background: '#F9FAFB',
+            borderBottom: '1px solid #F3F4F6',
+          }}>
             {['Timestamp', 'Action', 'Record', 'Details'].map(h => (
-              <span key={h} className="text-xs font-bold text-gray-400 uppercase tracking-wider">{h}</span>
+              <span key={h} style={{
+                fontSize: 11, fontWeight: 700, color: '#9CA3AF',
+                textTransform: 'uppercase', letterSpacing: '0.07em',
+              }}>
+                {h}
+              </span>
             ))}
           </div>
 
           {/* Rows */}
           {filtered.map((log, i) => {
-            const config = ACTION_CONFIG[log.action] || { label: log.action.toUpperCase(), color: 'bg-gray-100 text-gray-600', icon: Shield };
+            const config = ACTION_CONFIG[log.action] || {
+              label: log.action.toUpperCase(),
+              bg: '#F3F4F6', color: '#374151', icon: Shield,
+            };
             const Icon = config.icon;
+
+            const details = log.details
+              ? typeof log.details === 'object'
+                ? Object.entries(log.details).map(([k, v]) => `${k}: ${v}`).join(', ')
+                : String(log.details)
+              : '—';
+
             return (
-              <div key={log.id}
-                className={`grid grid-cols-4 gap-4 px-6 py-4 items-center border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+              <div key={log.id} style={{
+                display: 'grid',
+                gridTemplateColumns: '180px 140px 1fr 180px',
+                gap: 0,
+                padding: '14px 24px',
+                alignItems: 'center',
+                background: i % 2 === 0 ? 'white' : '#FAFAFA',
+                borderBottom: i < filtered.length - 1 ? '1px solid #F9FAFB' : 'none',
+              }}>
 
                 {/* Timestamp */}
                 <div>
-                  <p className="text-sm font-medium text-gray-700">
-                    {new Date(log.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(log.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
+                    {new Date(log.timestamp).toLocaleDateString('en-US', {
+                      month: 'short', day: 'numeric', year: 'numeric'
+                    })}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                    {new Date(log.timestamp).toLocaleTimeString('en-US', {
+                      hour: '2-digit', minute: '2-digit'
+                    })}
+                  </div>
                 </div>
 
                 {/* Action badge */}
                 <div>
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${config.color}`}>
-                    <Icon size={11} />
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    fontSize: 11, fontWeight: 700,
+                    padding: '4px 10px', borderRadius: 999,
+                    background: config.bg, color: config.color,
+                  }}>
+                    <Icon size={10} />
                     {config.label}
                   </span>
                 </div>
 
                 {/* Record */}
-                <div>
-                  <p className="text-sm text-gray-600 truncate">
-                    {log.record_title || <span className="text-gray-300">—</span>}
-                  </p>
+                <div style={{
+                  fontSize: 13, color: '#374151',
+                  fontWeight: log.record_title ? 500 : 400,
+                  paddingRight: 16,
+                }}>
+                  {log.record_title || <span style={{ color: '#D1D5DB' }}>—</span>}
                 </div>
 
                 {/* Details */}
-                <div>
-                  <p className="text-xs text-gray-400 truncate">
-                    {log.details
-                      ? typeof log.details === 'object'
-                        ? Object.entries(log.details).map(([k, v]) => `${k}: ${v}`).join(', ')
-                        : log.details
-                      : '—'}
-                  </p>
+                <div style={{
+                  fontSize: 12, color: '#9CA3AF',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {details}
                 </div>
               </div>
             );

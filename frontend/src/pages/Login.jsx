@@ -53,15 +53,15 @@ export default function Login() {
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         <Prism
           animationType="rotate"
-          timeScale={0.4}
+          timeScale={0.3}
           height={3.5}
           baseWidth={5.5}
           scale={3.6}
           hueShift={0}
           colorFrequency={1}
           noise={0}
-          glow={1}
-          bloom={1.2}
+          glow={0.8}
+          bloom={0.9}
           transparent={false}
         />
       </div>

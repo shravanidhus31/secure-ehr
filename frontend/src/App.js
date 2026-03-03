@@ -14,9 +14,12 @@ import { useAuth } from './context/AuthContext';
 
 function Layout({ children }) {
   return (
-    <div className="min-h-screen bg-bg-main">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(145deg, #EEF6FF 0%, #F0FDF4 50%, #FAFAFA 100%)',
+    }}>
       <Navbar />
-      <main className="pt-4">{children}</main>
+      <main style={{ paddingTop: 16 }}>{children}</main>
     </div>
   );
 }
