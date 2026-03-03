@@ -1,3 +1,5 @@
+import Lottie from 'lottie-react';
+import doctorsAnimation from '../assets/doctors.json';
 import { useState } from 'react';
 import { Search, Star, X, Calendar, Clock, Heart, Brain,
          Bone, Ear, Activity, Stethoscope } from 'lucide-react';
@@ -60,104 +62,111 @@ export default function FindDoctors() {
     <div style={{ minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 32px 64px' }}>
 
-        {/* ── Hero Banner ── */}
-        <div style={{
-          borderRadius: 24, overflow: 'hidden', position: 'relative',
-          background: '#1a1f3a', minHeight: 380, marginBottom: 60,
-          display: 'flex', alignItems: 'center',
-        }}>
-          {/* Background text */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center',
-            paddingLeft: 60, paddingRight: 60,
-          }}>
-            <div style={{
-              fontSize: 'clamp(52px, 8vw, 100px)',
-              fontWeight: 900, lineHeight: 1.05,
-              color: 'rgba(147, 197, 253, 0.15)',
-              letterSpacing: -2, userSelect: 'none',
-              position: 'absolute',
-            }}>
-              YOUR HEALTH,<br />OUR PRIORITY
-            </div>
-          </div>
+      {/* ── Hero Banner ── */}
+      <div style={{
+        borderRadius: 24, overflow: 'hidden', position: 'relative',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1a1f3a 40%, #0f2027 100%)',
+        minHeight: 380, marginBottom: 60,
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 60px',
+      }}>
 
-          {/* Doctor images */}
-          <div style={{
-            position: 'absolute', bottom: 0,
-            left: '50%', transform: 'translateX(-50%)',
-            display: 'flex', alignItems: 'flex-end', gap: 8, zIndex: 2,
-          }}>
-            {[
-              { url: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=260&h=320&fit=crop&crop=top", h: 280 },
-              { url: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=280&h=360&fit=crop&crop=top", h: 340 },
-              { url: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=260&h=320&fit=crop&crop=top", h: 280 },
-            ].map((img, i) => (
-              <img key={i} src={img.url} alt="doctor" style={{
-                height: img.h, width: 'auto',
-                objectFit: 'cover', objectPosition: 'top',
-                borderRadius: '12px 12px 0 0',
-                filter: 'drop-shadow(0 -4px 20px rgba(0,0,0,0.4))',
-              }} />
-            ))}
-          </div>
+        {/* Left — text content */}
+        <div style={{ zIndex: 3, maxWidth: 480 }}>
 
           {/* Feature pills */}
-          <div style={{ position: 'absolute', top: 40, left: 48, zIndex: 3 }}>
+          <div style={{ display: 'flex', gap: 10, marginBottom: 28 }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: 'rgba(134,239,172,0.2)', border: '1px solid rgba(134,239,172,0.4)',
-              borderRadius: 999, padding: '8px 16px',
-              fontSize: 13, fontWeight: 600, color: '#86EFAC',
+              background: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(134,239,172,0.4)',
+              borderRadius: 999, padding: '7px 14px',
+              fontSize: 12, fontWeight: 600, color: '#86EFAC',
             }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#86EFAC', display: 'inline-block' }} />
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#86EFAC', display: 'inline-block' }} />
               Secure Encrypted Records
             </div>
-          </div>
-
-          <div style={{ position: 'absolute', top: 40, right: 48, zIndex: 3 }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: 'rgba(251,191,36,0.2)', border: '1px solid rgba(251,191,36,0.4)',
-              borderRadius: 999, padding: '8px 16px',
-              fontSize: 13, fontWeight: 600, color: '#FCD34D',
+              background: 'rgba(255,255,255,0.08)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(251,191,36,0.4)',
+              borderRadius: 999, padding: '7px 14px',
+              fontSize: 12, fontWeight: 600, color: '#FCD34D',
             }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#FCD34D', display: 'inline-block' }} />
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#FCD34D', display: 'inline-block' }} />
               Trusted by 500+ Patients
             </div>
           </div>
 
-          {/* Bottom content */}
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0,
-            padding: '24px 48px',
-            background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
-            zIndex: 3,
+          {/* Main heading */}
+          <h1 style={{
+            fontSize: 'clamp(36px, 4vw, 58px)',
+            fontWeight: 900, lineHeight: 1.1,
+            color: 'white', marginBottom: 16,
+            letterSpacing: -1,
           }}>
-            <div>
-              <p style={{ color: 'rgba(147,197,253,0.8)', fontSize: 13, marginBottom: 4, fontWeight: 500 }}>
-                MediSafe Network
-              </p>
-              <h2 style={{ color: 'white', fontSize: 24, fontWeight: 800, lineHeight: 1.3 }}>
-                Trusted Medical<br />Experts Team
-              </h2>
-            </div>
+            YOUR HEALTH,<br />
+            <span style={{ color: '#86EFAC' }}>OUR PRIORITY</span>
+          </h1>
+
+          <p style={{
+            fontSize: 15, color: 'rgba(255,255,255,0.55)',
+            lineHeight: 1.7, marginBottom: 32, maxWidth: 380,
+          }}>
+            Connect with certified specialists. Your records stay end-to-end encrypted — always private, always secure.
+          </p>
+
+          {/* Bottom actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <button
               onClick={() => document.getElementById('doctors-grid').scrollIntoView({ behavior: 'smooth' })}
               style={{
-                background: 'white', color: '#16A34A',
+                background: '#16A34A', color: 'white',
                 border: 'none', borderRadius: 999,
-                padding: '12px 28px', fontSize: 14, fontWeight: 700,
+                padding: '13px 30px', fontSize: 14, fontWeight: 700,
                 cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                boxShadow: '0 4px 20px rgba(22,163,74,0.4)',
               }}>
               Schedule Meeting →
             </button>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+              <span style={{ color: 'white', fontWeight: 700 }}>50+</span> Specialists Available
+            </div>
+          </div>
+
+          {/* MediSafe network tag */}
+          <div style={{ marginTop: 32 }}>
+            <p style={{ fontSize: 12, color: 'rgba(147,197,253,0.7)', fontWeight: 500 }}>
+              MediSafe Network — Trusted Medical Experts Team
+            </p>
           </div>
         </div>
 
+        {/* Right — Lottie animation */}
+        <div style={{
+          zIndex: 3, width: '45%', maxWidth: 480,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Lottie
+            animationData={doctorsAnimation}
+            loop={true}
+            style={{ width: '100%', height: 'auto', maxHeight: 360 }}
+          />
+        </div>
+
+        {/* Subtle background glow */}
+        <div style={{
+          position: 'absolute', top: '50%', left: '30%',
+          transform: 'translate(-50%, -50%)',
+          width: 400, height: 400, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(22,163,74,0.08) 0%, transparent 70%)',
+          zIndex: 1, pointerEvents: 'none',
+        }} />
+      </div>
+      
         {/* ── Section title ── */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, color: '#111827', marginBottom: 8 }}>
